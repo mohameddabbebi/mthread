@@ -1,19 +1,24 @@
 #include <mthread.h>
 #include <cassert>
 #include <cstdio>
+#include <cstdlib>
 
 void dummy_destructor(void*) {}
 
 int main() {
-    printf("==== TEST mthread_key_create ====\n");
+    printf("==== TEST mthread_setspecific ====\n");
 
     mthread_key_t key{};
     int ret = mthread_key_create(&key, dummy_destructor);
-
     assert(ret == 0);
-    assert(key.is_initialized == true);
 
-    printf("[OK] key created with id=%d\n", key.id);
+    int *val = (int*)malloc(sizeof(int));
+    *val = 55;
+
+    ret = mthread_setspecific(&key, val);
+    assert(ret == 0);
+
+    printf("[OK] setspecific worked\n");
     printf("==== TEST OK ====\n");
 
     return 0;

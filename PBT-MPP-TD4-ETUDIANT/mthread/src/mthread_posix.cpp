@@ -8,18 +8,13 @@
 extern "C" {
 #endif
 
-// ==========================
-// Gestion globale des clés
-// ==========================
+
 
 static std::atomic_int g_next_key_id{0};
 
-// TLS : une map par thread
 static thread_local std::unordered_map<int, void*> tls_values;
 
-// ==========================
-// Q7 : mthread_key_create
-// ==========================
+
 
 int mthread_key_create(mthread_key_t *key, void (*destructor)(void*)) {
     if (key == nullptr) {
@@ -37,16 +32,14 @@ int mthread_key_create(mthread_key_t *key, void (*destructor)(void*)) {
     return 0;
 }
 
-// ==========================
-// Q8 : mthread_key_delete
-// ==========================
+
 
 int mthread_key_delete(mthread_key_t *key) {
     if (key == nullptr || !key->is_initialized) {
         return -1;
     }
 
-    // Si une valeur TLS existe pour ce thread, appeler le destructeur
+    
     auto it = tls_values.find(key->id);
     if (it != tls_values.end()) {
         if (key->destructor != nullptr) {
@@ -62,9 +55,7 @@ int mthread_key_delete(mthread_key_t *key) {
     return 0;
 }
 
-// ==========================
-// Q9 : mthread_setspecific
-// ==========================
+
 
 int mthread_setspecific(mthread_key_t *key, void *value) {
     if (key == nullptr || !key->is_initialized) {
@@ -75,9 +66,7 @@ int mthread_setspecific(mthread_key_t *key, void *value) {
     return 0;
 }
 
-// ==========================
-// Q10 : mthread_getspecific
-// ==========================
+
 
 void* mthread_getspecific(mthread_key_t *key) {
     if (key == nullptr || !key->is_initialized) {
